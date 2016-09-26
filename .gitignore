@@ -1,0 +1,14 @@
+# Python
+*.pyc
+
+# Vim
+*.swp
+
+# virtualenv
+venv/
+
+# SQLite database
+*.db
+
+# config secrets
+config.py

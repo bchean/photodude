@@ -1,0 +1,14 @@
+<!doctype html>
+<title>{% block title %}photodude{% endblock %}</title>
+
+<h1>{{ self.title() }}</h1>
+
+<span>photos in {{ config.PHOTO_DIR }}</span>
+
+<ul>
+  {% for photo in photos %}
+  <li>{{ photo.filename }}</li>
+  {% else %}
+  <li>(no photos)</li>
+  {% endfor %}
+</ul>
