@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
+{% block title %}
+{{ super() }} - photos
+{% endblock title %}
+
 {% block main %}
-photos
+<ul id=photoList></ul>
 {% endblock main %}
 
 {% block script_tags %}

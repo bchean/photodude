@@ -1,6 +1,49 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Backbone = require('backbone');
 
+var PhotoModel = Backbone.Model.extend({
+  defaults: {
+    filename: null,
+    date: null
+  }
+});
+
+var PhotoCollection = Backbone.Collection.extend({
+  url: '/api/photos',
+  model: PhotoModel
+});
+
+var PhotoListItemView = Backbone.View.extend({
+  tagName: 'li',
+  className: 'photoListItem',
+
+  render: function() {
+    var modelData = this.model.toJSON();
+    this.$el.html(modelData.filename + ' / ' + modelData.date);
+    return this;
+  }
+})
+
+var PhotoListView = Backbone.View.extend({
+  el: '#photoList',
+
+  initialize: function() {
+    this.listenTo(this.collection, 'sync', this.render);
+  },
+
+  render: function() {
+    this.collection.each(function(photoModel) {
+      var photoListItem = new PhotoListItemView({model: photoModel});
+      this.$el.append(photoListItem.render().$el);
+    }, this);
+    return this;
+  }
+})
+
+var photoCollection = new PhotoCollection();
+var photoListView = new PhotoListView({collection: photoCollection});
+photoCollection.fetch();
+
 },{"backbone":2}],2:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
