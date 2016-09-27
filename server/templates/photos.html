@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block main %}
+photos
+{% endblock main %}
+
+{% block script_tags %}
+<script src="{{ url_for('static', filename='test.js') }}"></script>
+{% endblock script_tags %}

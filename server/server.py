@@ -27,8 +27,11 @@ photo_model = PhotoModel(db_util)
 
 @app.route('/')
 def view_index():
-    photos = photo_model.get_all_photos()
-    return render_template('index.html', photos=photos)
+    return render_template('index.html')
+
+@app.route('/photos')
+def view_photos():
+    return render_template('photos.html')
 
 ##############
 ### API ROUTES
