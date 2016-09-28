@@ -1,13 +1,19 @@
-{% extends 'base.html' %}
+{% extends 'base_2column.html' %}
 
 {% block title %}
-{{ super() }} - photos
+{{ super() }} &gt; photos
 {% endblock title %}
 
-{% block main %}
-<ul id=photoList></ul>
-{% endblock main %}
+{% block left_column %}
+<h1>{{ self.title() }}</h1>
+<p><a href="{{ url_for('view_index') }}">&lt;&lt; back</a></p>
 
-{% block script_tags %}
+<ul id=photoList></ul>
+{% endblock left_column %}
+
+{% block right_column %}
+{% endblock right_column %}
+
+{% block script %}
 <script src="{{ url_for('static', filename='photos_app.js') }}"></script>
-{% endblock script_tags %}
+{% endblock script %}

@@ -4,6 +4,7 @@ var Backbone = require('backbone');
 var PhotoModel = Backbone.Model.extend({
   defaults: {
     filename: null,
+    description: null,
     date: null
   }
 });
@@ -19,7 +20,10 @@ var PhotoListItemView = Backbone.View.extend({
 
   render: function() {
     var modelData = this.model.toJSON();
-    this.$el.html(modelData.filename + ' / ' + modelData.date);
+    this.$el.html(
+        modelData.filename + ' / ' +
+        modelData.description + ' / '+
+        modelData.date);
     return this;
   }
 })

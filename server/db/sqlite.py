@@ -26,7 +26,7 @@ class SQLiteUtil:
     def init_db_if_necessary(self):
         db_file = self.app.config['DATABASE_FILE']
         if os.path.isfile(db_file):
-            print 'Database has already been initialized at %s.' % db_file
+            print 'Using existing database at %s.' % db_file
         else:
             self.init_db()
             print 'Initialized database at %s.' % db_file

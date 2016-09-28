@@ -4,17 +4,6 @@
 </head>
 
 <body>
-<h1>{{ self.title() }}</h1>
-
-<div class=main>
-{% block main %}{% endblock %}
-</div>
-
-<div class=backToIndex>
-{% block back_to_index %}
-<a href="{{ url_for('view_index') }}">back to home</a>
-{% endblock back_to_index %}
-</div>
-
-{% block script_tags %}{% endblock %}
+  {% block body %}{% endblock %}
+  {% block script %}{% endblock %}
 </body>

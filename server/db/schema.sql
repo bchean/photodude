@@ -2,13 +2,14 @@ drop table if exists photos;
 create table photos (
   id integer primary key,
   filename text not null unique,
+  description text,
   date text
 );
 
 drop table if exists labels;
 create table labels (
   id integer primary key,
-  name text not null,
+  name text not null unique,
   color text not null
 );
 

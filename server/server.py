@@ -57,11 +57,15 @@ def cmd_initdb():
 @app.cli.command('refreshphotos')
 def cmd_refreshphotos():
     photo_dir = app.config['PHOTO_DIR']
+    num_new_photos = 0
     for path in os.listdir(photo_dir):
         if is_photo_file(path):
             result = photo_model.put_single_photo(path)
             if 'error' in result:
                 sys.stderr.write(str(result) + '\n')
+            elif result['is_new_photo']:
+                num_new_photos += 1
+    print 'Refreshed photos, detected %d new photos.' % num_new_photos
 
 def is_photo_file(path):
     photo_dir = app.config['PHOTO_DIR']
