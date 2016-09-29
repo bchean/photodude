@@ -105,13 +105,56 @@ var LabelListView = Backbone.View.extend({
   }
 });
 
+var CurrentLabelPhotosView = Backbone.View.extend({
+  el: '#currentLabelContainer #imagesContainer',
+
+  initialize: function() {
+    dispatcher.on('update:currentLabel', this.handleUpdateCurrentLabel, this);
+    this.listenTo(this.collection, 'sync', this.render);
+  },
+
+  render: function() {
+    if (!this.collection.length) {
+      this.$el.html('no photos yet');
+    } else {
+      this.$el.html(null);
+      this.collection.each(function(photoModel) {
+        var $photoImageEl = $('<img/>');
+        $photoImageEl.addClass('image');
+        $photoImageEl.attr('src', '/photo_files/' + photoModel.get('filename'));
+        this.$el.append($photoImageEl);
+      }, this);
+    }
+    return this;
+  },
+
+  handleUpdateCurrentLabel: function(newLabelModel) {
+    var newLabelId = newLabelModel.get('id');
+    this.collection.fetch({data: {label_id: newLabelId}});
+  }
+});
+
 var labelCollection = new MC.LabelCollection();
 var labelListView = new LabelListView({collection: labelCollection});
+var photoCollection = new MC.PhotoCollection();
+var currentLabelPhotosView = new CurrentLabelPhotosView({collection: photoCollection});
 
 dispatcher.listenToOnce(labelCollection, 'sync', function() {
   if (labelCollection.length) {
     labelListView.selectFirstLabel();
   }
 });
+
+document.onkeypress = function(e) {
+  if (e.key === 'j') {
+    labelListView.selectNextLabel();
+  } else if (e.key === 'k') {
+    labelListView.selectPreviousLabel();
+  } else if (e.key === 'g') {
+    labelListView.selectFirstLabel();
+  } else if (e.key === 'G') {
+    labelListView.selectLastLabel();
+  }
+};
 
 labelCollection.fetch();

@@ -1,9 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Backbone = require('backbone'),
-    _ = require('underscore'),
-    $ = require('jquery');
-
-var dispatcher = _.extend({}, Backbone.Events);
+var Backbone = require('backbone');
 
 var PhotoModel = Backbone.Model.extend({
   defaults: {
@@ -32,6 +28,21 @@ var LabelCollection = Backbone.Collection.extend({
   model: LabelModel
 });
 
+module.exports = {
+  PhotoModel: PhotoModel,
+  PhotoCollection: PhotoCollection,
+  LabelModel: LabelModel,
+  LabelCollection: LabelCollection
+};
+
+},{"backbone":3}],2:[function(require,module,exports){
+var Backbone = require('backbone'),
+    _ = require('underscore'),
+    $ = require('jquery'),
+    MC = require('./mc');
+
+var dispatcher = _.extend({}, Backbone.Events);
+
 var PhotoListItemView = Backbone.View.extend({
   tagName: 'li',
   className: 'photoListItem',
@@ -54,7 +65,7 @@ var PhotoListItemView = Backbone.View.extend({
   fireClickPhoto: function() {
     dispatcher.trigger('click:photo', this.$el);
   }
-})
+});
 
 var PhotoListView = Backbone.View.extend({
   el: '#photoList',
@@ -77,7 +88,6 @@ var PhotoListView = Backbone.View.extend({
 
   handleClickPhoto: function($clickedPhoto) {
     var clickedIndex_0 = this.$el.children().index($clickedPhoto);
-    console.log('clicked ' + clickedIndex_0);
     this.selectPhoto(clickedIndex_0);
   },
 
@@ -132,7 +142,7 @@ var PhotoListView = Backbone.View.extend({
       el.scrollIntoView(scrollingUp);
     }
   }
-})
+});
 
 var CurrentPhotoView = Backbone.View.extend({
   el: '#currentPhotoContainer',
@@ -153,7 +163,7 @@ var CurrentPhotoView = Backbone.View.extend({
     this.currentPhotoModel = newPhotoModel;
     this.render();
   }
-})
+});
 
 var CurrentPhotoLabelsView = Backbone.View.extend({
   el: '#currentPhotoContainer #labels',
@@ -176,13 +186,13 @@ var CurrentPhotoLabelsView = Backbone.View.extend({
     var newPhotoId = newPhotoModel.get('id');
     this.collection.fetch({data: {photo_id: newPhotoId}});
   }
-})
+});
 
-var photoCollection = new PhotoCollection();
+var photoCollection = new MC.PhotoCollection();
 var photoListView = new PhotoListView({collection: photoCollection});
 var currentPhotoView = new CurrentPhotoView({collection: photoCollection});
 
-var labelCollection = new LabelCollection();
+var labelCollection = new MC.LabelCollection();
 var currentPhotoLabelsView = new CurrentPhotoLabelsView({collection: labelCollection});
 
 dispatcher.listenToOnce(photoCollection, 'sync', function() {
@@ -205,7 +215,7 @@ document.onkeypress = function(e) {
 
 photoCollection.fetch();
 
-},{"backbone":2,"jquery":3,"underscore":4}],2:[function(require,module,exports){
+},{"./mc":1,"backbone":3,"jquery":4,"underscore":5}],3:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
 
@@ -2129,7 +2139,7 @@ photoCollection.fetch();
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":3,"underscore":4}],3:[function(require,module,exports){
+},{"jquery":4,"underscore":5}],4:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v3.1.1
  * https://jquery.com/
@@ -12351,7 +12361,7 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -13901,4 +13911,4 @@ return jQuery;
   }
 }.call(this));
 
-},{}]},{},[1]);
+},{}]},{},[2]);

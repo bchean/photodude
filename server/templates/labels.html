@@ -19,7 +19,16 @@
   color: blue;
 }
 .labelListItem.selected::before {
-  content: ">";
+  content: "> ";
+}
+
+#currentLabelContainer {
+  padding: 1rem;
+}
+
+#imagesContainer .image {
+  max-width: 400px;
+  margin: 1px;
 }
 </style>
 {% endblock style %}
@@ -32,6 +41,10 @@
 {% endblock left_column %}
 
 {% block right_column %}
+<div id=currentLabelContainer>
+  <div id=imagesContainer>
+  </div>
+</div>
 {% endblock right_column %}
 
 {% block script %}
