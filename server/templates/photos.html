@@ -7,15 +7,28 @@
 {% block style %}
 {{ super() }}
 <style type="text/css">
-.photoPreviewContainer {
-  height: 60%;
+#currentPhotoContainer {
+  height: 100%;
+  padding: 1rem;
+}
+
+.imageContainer {
+  height: 75%;
+}
+
+#image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.detailsContainer {
+  margin-top: 1rem;
   text-align: center;
 }
 
-#photoPreviewImage {
-  width: 90%;
-  max-height: 90%;
-  object-fit: contain;
+.labelsContainer {
+  margin-top: 1rem;
 }
 </style>
 {% endblock style %}
@@ -28,8 +41,28 @@
 {% endblock left_column %}
 
 {% block right_column %}
-<div class=photoPreviewContainer>
-  <img id=photoPreviewImage src=""/>
+<div id=currentPhotoContainer>
+
+  <div class=imageContainer>
+    <img id=image src=""/>
+  </div>
+
+  <div class=detailsContainer>
+
+    <div class=descriptionContainer>
+      <span id=description></span>
+    </div>
+
+    <div class=dateContainer>
+      <span id=date></span>
+    </div>
+
+    <div class=labelsContainer>
+      <span id=labels></span>
+    </div>
+
+  </div>
+
 </div>
 {% endblock right_column %}
 
