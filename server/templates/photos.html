@@ -7,13 +7,20 @@
 {% block style %}
 {{ super() }}
 <style type="text/css">
+.photoListItem.selected {
+  color: blue;
+}
+.photoListItem.selected::before {
+  content: ">";
+}
+
 #currentPhotoContainer {
   height: 100%;
   padding: 1rem;
 }
 
 .imageContainer {
-  height: 75%;
+  height: 80%;
 }
 
 #image {
