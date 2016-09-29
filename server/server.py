@@ -11,6 +11,8 @@ from flask import send_from_directory
 
 from db.sqlite import SQLiteUtil
 from models.photo import PhotoModel
+from models.label import LabelModel
+from models.photolabel import PhotolabelModel
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -21,6 +23,8 @@ app.config.from_envvar('FLASK_CONFIG')
 
 db_util = SQLiteUtil(app)
 photo_model = PhotoModel(db_util)
+label_model = LabelModel(db_util)
+photolabel_model = PhotolabelModel(db_util)
 
 ###############
 ### VIEW ROUTES
@@ -30,7 +34,7 @@ photo_model = PhotoModel(db_util)
 def view_index():
     return render_template('index.html')
 
-@app.route('/photos')
+@app.route('/photos/')
 def view_photos():
     return render_template('photos.html')
 
@@ -38,17 +42,45 @@ def view_photos():
 ### API ROUTES
 ##############
 
-@app.route('/api/photos', methods=['GET'])
+@app.route('/api/photos/', methods=['GET'])
 def api_get_all_photos():
-    result = photo_model.get_all_photos()
+    if 'label_id' in request.args:
+        result = photo_model.get_all_photos_for_label(request.args['label_id'])
+    else:
+        result = photo_model.get_all_photos()
     return jsonify(result)
 
-@app.route('/api/photos/<string:filename>', methods=['PUT'])
+@app.route('/api/photos/<string:filename>/', methods=['PUT'])
 def api_update_single_photo(filename):
-    print request.form.keys()
     description = request.form['description']
     date = request.form['date']
     result = photo_model.update_single_photo(filename, description, date)
+    return jsonify(result)
+
+@app.route('/api/labels/', methods=['GET'])
+def api_get_all_labels():
+    if 'photo_id' in request.args:
+        result = label_model.get_all_labels_for_photo(request.args['photo_id'])
+    else:
+        result = label_model.get_all_labels()
+    return jsonify(result)
+
+@app.route('/api/labels/<string:name>/', methods=['GET'])
+def api_get_single_label(name):
+    result = label_model.get_single_label(name)
+    return jsonify(result)
+
+@app.route('/api/labels/', methods=['POST'])
+def api_insert_single_label():
+    name = request.form['name']
+    result = label_model.insert_single_label(name)
+    return jsonify(result)
+
+@app.route('/api/photolabels/', methods=['POST'])
+def api_insert_single_photolabel():
+    photo_id = request.form['photo_id']
+    label_id = request.form['label_id']
+    result = photolabel_model.insert_single_photolabel(photo_id, label_id)
     return jsonify(result)
 
 ################

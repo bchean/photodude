@@ -9,6 +9,10 @@ class SQLiteUtil:
     def connect_to_db(self):
         conn = sqlite3.connect(self.app.config['DATABASE_FILE'])
         conn.row_factory = sqlite3.Row
+
+        # Can't do this in schema file for some reason.
+        conn.execute('pragma foreign_keys = on')
+
         return conn
 
     def get_db(self):
