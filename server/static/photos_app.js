@@ -1,5 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var Backbone = require('backbone');
+var Backbone = require('backbone'),
+    _ = require('underscore');
+
+var dispatcher = _.extend({}, Backbone.Events);
 
 var PhotoModel = Backbone.Model.extend({
   defaults: {
@@ -18,6 +21,10 @@ var PhotoListItemView = Backbone.View.extend({
   tagName: 'li',
   className: 'photoListItem',
 
+  events: {
+    click: 'fireUpdatePreview'
+  },
+
   render: function() {
     var modelData = this.model.toJSON();
     this.$el.html(
@@ -25,6 +32,10 @@ var PhotoListItemView = Backbone.View.extend({
         modelData.description + ' / '+
         modelData.date);
     return this;
+  },
+
+  fireUpdatePreview: function() {
+    dispatcher.trigger('update:preview', this.model);
   }
 })
 
@@ -44,11 +55,36 @@ var PhotoListView = Backbone.View.extend({
   }
 })
 
+var PhotoPreviewImageView = Backbone.View.extend({
+  el: '#photoPreviewImage',
+
+  initialize: function() {
+    dispatcher.on('update:preview', this.handleUpdatePreview, this);
+
+    this.listenToOnce(this.collection, 'sync', function() {
+      if (this.collection.length) {
+        this.handleUpdatePreview(this.collection.at(0));
+      }
+    });
+  },
+
+  render: function() {
+    this.$el.attr('src', '/photo_files/' + this.currentPhotoModel.get('filename'));
+    return this;
+  },
+
+  handleUpdatePreview: function(newPhotoModel) {
+    this.currentPhotoModel = newPhotoModel;
+    this.render();
+  }
+})
+
 var photoCollection = new PhotoCollection();
 var photoListView = new PhotoListView({collection: photoCollection});
+var photoPreviewImageView = new PhotoPreviewImageView({collection: photoCollection});
 photoCollection.fetch();
 
-},{"backbone":2}],2:[function(require,module,exports){
+},{"backbone":2,"underscore":4}],2:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
 

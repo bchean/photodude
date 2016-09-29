@@ -12,7 +12,7 @@
   text-align: center;
 }
 
-.photoImage {
+#photoPreviewImage {
   width: 90%;
   max-height: 90%;
   object-fit: contain;
@@ -29,7 +29,7 @@
 
 {% block right_column %}
 <div class=photoPreviewContainer>
-  <img class=photoImage src=""/>
+  <img id=photoPreviewImage src=""/>
 </div>
 {% endblock right_column %}
 
