@@ -2,6 +2,15 @@ class PhotoModel:
     def __init__(self, db_util):
         self.db_util = db_util
 
+    def _catch_exception_and_return_dict(function):
+        def wrapper(*args, **kwargs):
+            try:
+                return function(*args, **kwargs)
+            except Exception as e:
+                return dict(error=str(e))
+        return wrapper
+
+    @_catch_exception_and_return_dict
     def get_all_photos(self):
         db = self.db_util.get_db()
         cur = db.execute('select filename, description, date from photos')
@@ -15,15 +24,19 @@ class PhotoModel:
             description=photo_row['description'],
             date=photo_row['date'])
 
-    def put_single_photo(self, filename):
+    @_catch_exception_and_return_dict
+    def insert_single_photo_if_not_present(self, filename):
         db = self.db_util.get_db()
-        try:
-            db.execute('insert or ignore into photos (filename) values (?)', [filename])
-            db.commit()
+        db.execute('insert or ignore into photos (filename) values (?)', [filename])
+        db.commit()
 
-            cur = db.execute('select changes()')
-            is_new_photo = (cur.fetchone()[0] == 1)
+        cur = db.execute('select changes()')
+        is_new_photo = (cur.fetchone()[0] == 1)
+        return dict(is_new_photo=is_new_photo)
 
-            return dict(is_new_photo=is_new_photo)
-        except Exception as e:
-            return dict(error=str(e))
+    @_catch_exception_and_return_dict
+    def update_single_photo(self, filename, description, date):
+        db = self.db_util.get_db()
+        db.execute('update photos set description = ?, date = ? where filename = ?', [description, date, filename])
+        db.commit()
+        return dict(success=True)

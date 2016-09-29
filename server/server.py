@@ -42,6 +42,14 @@ def api_get_all_photos():
     result = photo_model.get_all_photos()
     return jsonify(result)
 
+@app.route('/api/photos/<filename>', methods=['PUT'])
+def api_update_single_photo(filename):
+    print request.form.keys()
+    description = request.form['description']
+    date = request.form['date']
+    result = photo_model.update_single_photo(filename, description, date)
+    return jsonify(result)
+
 ####################
 ### OTHER APP CONFIG
 ####################
@@ -60,7 +68,7 @@ def cmd_refreshphotos():
     num_new_photos = 0
     for path in os.listdir(photo_dir):
         if is_photo_file(path):
-            result = photo_model.put_single_photo(path)
+            result = photo_model.insert_single_photo_if_not_present(path)
             if 'error' in result:
                 sys.stderr.write(str(result) + '\n')
             elif result['is_new_photo']:
