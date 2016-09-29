@@ -1,13 +1,30 @@
 {% extends 'base.html' %}
 
+{% block style %}
+{{ super() }}
+<style type="text/css">
+.column {
+  width: 50%;
+  height: 100vh;
+  float: left;
+  overflow-y: scroll;
+}
+.clear {
+  clear: left;
+}
+</style>
+{% endblock style %}
+
 {% block body %}
+<div class=columnsContainer>
+  <div class="column leftColumn">
+    {% block left_column %}{% endblock %}
+  </div>
 
-<div class=leftColumn>
-  {% block left_column %}{% endblock %}
+  <div class="column rightColumn">
+    {% block right_column %}{% endblock %}
+  </div>
+
+  <div class=clear></div>
 </div>
-
-<div class=rightColumn>
-  {% block right_column %}{% endblock %}
-</div>
-
 {% endblock body %}

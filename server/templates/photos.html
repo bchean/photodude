@@ -4,6 +4,22 @@
 {{ super() }} &gt; photos
 {% endblock title %}
 
+{% block style %}
+{{ super() }}
+<style type="text/css">
+.photoPreviewContainer {
+  height: 60%;
+  text-align: center;
+}
+
+.photoImage {
+  width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+</style>
+{% endblock style %}
+
 {% block left_column %}
 <h1>{{ self.title() }}</h1>
 <p><a href="{{ url_for('view_index') }}">&lt;&lt; back</a></p>
@@ -12,6 +28,9 @@
 {% endblock left_column %}
 
 {% block right_column %}
+<div class=photoPreviewContainer>
+  <img class=photoImage src=""/>
+</div>
 {% endblock right_column %}
 
 {% block script %}

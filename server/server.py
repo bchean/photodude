@@ -7,6 +7,7 @@ from flask import jsonify
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_from_directory
 
 from db.sqlite import SQLiteUtil
 from models.photo import PhotoModel
@@ -42,13 +43,21 @@ def api_get_all_photos():
     result = photo_model.get_all_photos()
     return jsonify(result)
 
-@app.route('/api/photos/<filename>', methods=['PUT'])
+@app.route('/api/photos/<string:filename>', methods=['PUT'])
 def api_update_single_photo(filename):
     print request.form.keys()
     description = request.form['description']
     date = request.form['date']
     result = photo_model.update_single_photo(filename, description, date)
     return jsonify(result)
+
+################
+### OTHER ROUTES
+################
+
+@app.route('/photo_files/<path:filename>', methods=['GET'])
+def fetch_photo_file(filename):
+    return send_from_directory(app.config['PHOTO_DIR'], filename)
 
 ####################
 ### OTHER APP CONFIG
