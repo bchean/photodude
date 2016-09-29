@@ -15,17 +15,17 @@ class SQLiteUtil:
 
         return conn
 
-    def get_db(self):
-        if not hasattr(g, 'sqlite_db'):
-            g.sqlite_db = self.connect_to_db()
-        return g.sqlite_db
+    def get_db_conn(self):
+        if not hasattr(g, 'sqlite_db_conn'):
+            g.sqlite_db_conn = self.connect_to_db()
+        return g.sqlite_db_conn
 
     def init_db(self):
-        db = self.get_db()
+        conn = self.get_db_conn()
         schema_file = self.app.config['SCHEMA_FILE']
         with self.app.open_resource(schema_file, mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+            conn.executescript(f.read())
+        conn.commit()
 
     def init_db_if_necessary(self):
         db_file = self.app.config['DATABASE_FILE']
@@ -36,5 +36,5 @@ class SQLiteUtil:
             print 'Initialized database at %s.' % db_file
 
     def close_db(self):
-        if hasattr(g, 'sqlite_db'):
-            g.sqlite_db.close()
+        if hasattr(g, 'sqlite_db_conn'):
+            g.sqlite_db_conn.close()
