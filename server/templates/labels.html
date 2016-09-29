@@ -1,0 +1,39 @@
+{% extends 'base_2column.html' %}
+
+{% block title %}
+{{ super() }} &gt; labels
+{% endblock title %}
+
+{% block style %}
+{{ super() }}
+<style type="text/css">
+.leftColumn {
+  width: 20%;
+}
+
+.rightColumn {
+  width: 80%;
+}
+
+.labelListItem.selected {
+  color: blue;
+}
+.labelListItem.selected::before {
+  content: ">";
+}
+</style>
+{% endblock style %}
+
+{% block left_column %}
+<h1>{{ self.title() }}</h1>
+<p><a href="{{ url_for('view_photos') }}">&lt;&lt; photos</a></p>
+
+<ul id=labelList></ul>
+{% endblock left_column %}
+
+{% block right_column %}
+{% endblock right_column %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='labels_app.js') }}"></script>
+{% endblock script %}

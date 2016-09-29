@@ -38,6 +38,10 @@ def view_index():
 def view_photos():
     return render_template('photos.html')
 
+@app.route('/labels/')
+def view_labels():
+    return render_template('labels.html')
+
 ##############
 ### API ROUTES
 ##############

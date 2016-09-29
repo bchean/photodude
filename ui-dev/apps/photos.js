@@ -1,35 +1,9 @@
 var Backbone = require('backbone'),
     _ = require('underscore'),
-    $ = require('jquery');
+    $ = require('jquery'),
+    MC = require('./mc');
 
 var dispatcher = _.extend({}, Backbone.Events);
-
-var PhotoModel = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    filename: null,
-    description: null,
-    date: null
-  }
-});
-
-var PhotoCollection = Backbone.Collection.extend({
-  url: '/api/photos',
-  model: PhotoModel
-});
-
-var LabelModel = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    name: null,
-    color: null
-  }
-});
-
-var LabelCollection = Backbone.Collection.extend({
-  url: '/api/labels',
-  model: LabelModel
-});
 
 var PhotoListItemView = Backbone.View.extend({
   tagName: 'li',
@@ -53,7 +27,7 @@ var PhotoListItemView = Backbone.View.extend({
   fireClickPhoto: function() {
     dispatcher.trigger('click:photo', this.$el);
   }
-})
+});
 
 var PhotoListView = Backbone.View.extend({
   el: '#photoList',
@@ -76,7 +50,6 @@ var PhotoListView = Backbone.View.extend({
 
   handleClickPhoto: function($clickedPhoto) {
     var clickedIndex_0 = this.$el.children().index($clickedPhoto);
-    console.log('clicked ' + clickedIndex_0);
     this.selectPhoto(clickedIndex_0);
   },
 
@@ -131,7 +104,7 @@ var PhotoListView = Backbone.View.extend({
       el.scrollIntoView(scrollingUp);
     }
   }
-})
+});
 
 var CurrentPhotoView = Backbone.View.extend({
   el: '#currentPhotoContainer',
@@ -152,7 +125,7 @@ var CurrentPhotoView = Backbone.View.extend({
     this.currentPhotoModel = newPhotoModel;
     this.render();
   }
-})
+});
 
 var CurrentPhotoLabelsView = Backbone.View.extend({
   el: '#currentPhotoContainer #labels',
@@ -175,13 +148,13 @@ var CurrentPhotoLabelsView = Backbone.View.extend({
     var newPhotoId = newPhotoModel.get('id');
     this.collection.fetch({data: {photo_id: newPhotoId}});
   }
-})
+});
 
-var photoCollection = new PhotoCollection();
+var photoCollection = new MC.PhotoCollection();
 var photoListView = new PhotoListView({collection: photoCollection});
 var currentPhotoView = new CurrentPhotoView({collection: photoCollection});
 
-var labelCollection = new LabelCollection();
+var labelCollection = new MC.LabelCollection();
 var currentPhotoLabelsView = new CurrentPhotoLabelsView({collection: labelCollection});
 
 dispatcher.listenToOnce(photoCollection, 'sync', function() {
