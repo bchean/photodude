@@ -176,7 +176,9 @@ var CreateLabelModalView = Backbone.View.extend({
   }
 });
 
-var labelCollection = new MC.LabelCollection();
+var labelCollection = new MC.LabelCollection({}, {
+  comparator: 'name'
+});
 var labelListView = new LabelListView({collection: labelCollection});
 var photoCollection = new MC.PhotoCollection();
 var currentLabelPhotosView = new CurrentLabelPhotosView({collection: photoCollection});
@@ -201,7 +203,9 @@ $(document).keypress(function(e) {
 $(document).keyup(function(e) {
   // With keypress, the 'l' makes it into the input box.
   if (e.key === 'l') {
-    createLabelModalView.show();
+    if (!createLabelModalView.isVisible()) {
+      createLabelModalView.show();
+    }
   }
 });
 
