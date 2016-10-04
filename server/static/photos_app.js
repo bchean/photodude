@@ -1,38 +1,30 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Backbone = require('backbone');
 
-var PhotoModel = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    filename: null,
-    description: null,
-    date: null
-  }
-});
+var PhotoModel = Backbone.Model.extend({});
 
 var PhotoCollection = Backbone.Collection.extend({
   url: '/api/photos',
   model: PhotoModel
 });
 
-var LabelModel = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    name: null,
-    color: null
-  }
-});
+var LabelModel = Backbone.Model.extend({});
 
 var LabelCollection = Backbone.Collection.extend({
   url: '/api/labels',
   model: LabelModel
 });
 
+var PhotolabelModel = Backbone.Model.extend({
+  urlRoot: '/api/photolabels/'
+})
+
 module.exports = {
   PhotoModel: PhotoModel,
   PhotoCollection: PhotoCollection,
   LabelModel: LabelModel,
-  LabelCollection: LabelCollection
+  LabelCollection: LabelCollection,
+  PhotolabelModel: PhotolabelModel
 };
 
 },{"backbone":3}],2:[function(require,module,exports){
@@ -166,7 +158,10 @@ var CurrentPhotoView = Backbone.View.extend({
 });
 
 var CurrentPhotoLabelsView = Backbone.View.extend({
-  el: '#currentPhotoContainer #labels',
+  el: '#currentPhotoContainer #labelsContainer',
+  events: {
+    'click #addLabelButton': 'openAddLabelDialog'
+  },
 
   initialize: function() {
     dispatcher.on('update:currentPhoto', this.handleUpdateCurrentPhoto, this);
@@ -174,26 +169,93 @@ var CurrentPhotoLabelsView = Backbone.View.extend({
   },
 
   render: function() {
-    var labels = this.collection.map(function(labelModel) {
-      return labelModel.get('name');
-    });
-    var labelStr = labels.join(', ');
-    this.$el.html(labelStr || 'no labels yet');
+    var labelStr = this.getLabels().join(', ');
+    this.$('#labels').html(labelStr || 'no labels yet');
     return this;
   },
 
+  getLabels: function() {
+    return this.collection.map(function(labelModel) {
+      return labelModel.get('name');
+    })
+  },
+
   handleUpdateCurrentPhoto: function(newPhotoModel) {
-    var newPhotoId = newPhotoModel.get('id');
-    this.collection.fetch({data: {photo_id: newPhotoId}});
+    this.currentPhotoId = newPhotoModel.get('id');
+    this.refresh();
+  },
+
+  refresh: function() {
+    this.collection.fetch({data: {photo_id: this.currentPhotoId}});
+  },
+
+  openAddLabelDialog() {
+    currentPhotoAddLabelModalView.show();
+  }
+});
+
+var CurrentPhotoAddLabelModalView = Backbone.View.extend({
+  el: '#addLabelModal',
+  events: {
+    'change #labelPicker': 'handleSelectLabel',
+    'click #closeAddLabelModal': 'hide'
+  },
+
+  initialize: function() {
+    dispatcher.on('update:currentPhoto', function(newPhotoModel) {
+      this.model = newPhotoModel
+    }, this);
+    this.listenTo(labelCollection, 'sync', this.render);
+  },
+
+  render: function() {
+    var $labelEls = labelCollection.map(function(labelModel) {
+      var $labelEl = $('<option></option>');
+      $labelEl.attr('value', labelModel.get('id'));
+      $labelEl.html(labelModel.get('name'));
+      return $labelEl;
+    });
+
+    var $labelPicker = this.$('#labelPicker');
+    $labelPicker.html(null);
+    $labelPicker.append($('<option value="none">---</option>'));
+    $labelPicker.append($labelEls);
+
+    return this;
+  },
+
+  show: function() {
+    this.$('#labelPicker').val('none');
+    this.$el.removeClass('hidden');
+    this.$('#labelPicker').focus();
+  },
+
+  hide: function() {
+    this.$el.addClass('hidden');
+  },
+
+  handleSelectLabel: function() {
+    var currentPhotoId = this.model.get('id');
+    var selectedLabelId = this.$('#labelPicker').val();
+
+    if (currentPhotoLabelsView.getLabels().indexOf(selectedLabelId) === -1) {
+      new MC.PhotolabelModel({
+        photo_id: currentPhotoId,
+        label_id: selectedLabelId
+      }).save();
+    }
+
+    this.hide();
+    currentPhotoLabelsView.refresh();
   }
 });
 
 var photoCollection = new MC.PhotoCollection();
+var labelCollection = new MC.LabelCollection();
 var photoListView = new PhotoListView({collection: photoCollection});
 var currentPhotoView = new CurrentPhotoView({collection: photoCollection});
-
-var labelCollection = new MC.LabelCollection();
-var currentPhotoLabelsView = new CurrentPhotoLabelsView({collection: labelCollection});
+var currentPhotoLabelsView = new CurrentPhotoLabelsView({collection: new MC.LabelCollection()});
+var currentPhotoAddLabelModalView = new CurrentPhotoAddLabelModalView();
 
 dispatcher.listenToOnce(photoCollection, 'sync', function() {
   if (photoCollection.length) {
@@ -210,10 +272,13 @@ document.onkeypress = function(e) {
     photoListView.selectFirstPhoto();
   } else if (e.key === 'G') {
     photoListView.selectLastPhoto();
+  } else if (e.key === 'l') {
+    currentPhotoAddLabelModalView.show();
   }
 };
 
 photoCollection.fetch();
+labelCollection.fetch();
 
 },{"./mc":1,"backbone":3,"jquery":4,"underscore":5}],3:[function(require,module,exports){
 (function (global){

@@ -56,8 +56,8 @@ def api_get_all_photos():
 
 @app.route('/api/photos/<string:filename>/', methods=['PUT'])
 def api_update_single_photo(filename):
-    description = request.form['description']
-    date = request.form['date']
+    description = request.json['description']
+    date = request.json['date']
     result = photo_model.update_single_photo(filename, description, date)
     return jsonify(result)
 
@@ -76,14 +76,14 @@ def api_get_single_label(name):
 
 @app.route('/api/labels/', methods=['POST'])
 def api_insert_single_label():
-    name = request.form['name']
+    name = request.json['name']
     result = label_model.insert_single_label(name)
     return jsonify(result)
 
 @app.route('/api/photolabels/', methods=['POST'])
 def api_insert_single_photolabel():
-    photo_id = request.form['photo_id']
-    label_id = request.form['label_id']
+    photo_id = request.json['photo_id']
+    label_id = request.json['label_id']
     result = photolabel_model.insert_single_photolabel(photo_id, label_id)
     return jsonify(result)
 

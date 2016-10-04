@@ -163,38 +163,30 @@ labelCollection.fetch();
 },{"./mc":2,"backbone":3,"jquery":4,"underscore":5}],2:[function(require,module,exports){
 var Backbone = require('backbone');
 
-var PhotoModel = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    filename: null,
-    description: null,
-    date: null
-  }
-});
+var PhotoModel = Backbone.Model.extend({});
 
 var PhotoCollection = Backbone.Collection.extend({
   url: '/api/photos',
   model: PhotoModel
 });
 
-var LabelModel = Backbone.Model.extend({
-  defaults: {
-    id: null,
-    name: null,
-    color: null
-  }
-});
+var LabelModel = Backbone.Model.extend({});
 
 var LabelCollection = Backbone.Collection.extend({
   url: '/api/labels',
   model: LabelModel
 });
 
+var PhotolabelModel = Backbone.Model.extend({
+  urlRoot: '/api/photolabels/'
+})
+
 module.exports = {
   PhotoModel: PhotoModel,
   PhotoCollection: PhotoCollection,
   LabelModel: LabelModel,
-  LabelCollection: LabelCollection
+  LabelCollection: LabelCollection,
+  PhotolabelModel: PhotolabelModel
 };
 
 },{"backbone":3}],3:[function(require,module,exports){

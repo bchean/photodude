@@ -7,6 +7,22 @@
 {% block style %}
 {{ super() }}
 <style type="text/css">
+.modal {
+  width: 140px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -60px;
+  margin-left: -70px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid black;
+}
+
+.hidden {
+  display: none;
+}
+
 .photoListItem.selected {
   color: blue;
 }
@@ -64,12 +80,24 @@
       <span id=date></span>
     </div>
 
-    <div class=labelsContainer>
-      <span id=labels></span>
+    <div id=labelsContainer>
+      <p><span id=labels></span></p>
+      <button id=addLabelButton>add</button>
+      <button id=removeLabelButton>remove</button>
     </div>
 
   </div>
+</div>
 
+<div id=addLabelModal class="modal hidden">
+  <p>&gt; add label</p>
+  <p><select id=labelPicker></select></p>
+  <p><a id=closeAddLabelModal href=#>&lt;&lt; close</a></p>
+</div>
+
+<div id=removeLabelContainer class="modal hidden">
+  <p>&gt; remove label</p>
+  <select id=labelPicker></select>
 </div>
 {% endblock right_column %}
 
