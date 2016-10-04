@@ -15,7 +15,7 @@
   margin-top: -60px;
   margin-left: -70px;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, .95);
   border: 1px solid lightgrey;
   border-radius: .25rem;
 }
@@ -70,6 +70,10 @@
 .labelsContainer {
   margin-top: 1rem;
 }
+
+.photoLabelLink:not(:first-child) {
+  margin-left: .25rem;
+}
 </style>
 {% endblock style %}
 
@@ -100,7 +104,6 @@
     <div id=labelsContainer>
       <p><span id=labels></span></p>
       <button id=addLabelButton>add</button>
-      <button id=removeLabelButton>remove</button>
     </div>
 
   </div>
@@ -112,9 +115,10 @@
   <p><a id=closeAddLabelModal href=#>&lt;&lt; close</a></p>
 </div>
 
-<div id=removeLabelContainer class="modal hidden">
+<div id=removeLabelModal class="modal hidden">
   <p>&gt; remove label</p>
-  <select id=labelPicker></select>
+  <p><a id=confirmLabelRemove href=#>&gt; remove [<span id=labelToRemove></span>]</a></p>
+  <p><a id=closeAddLabelModal href=#>&lt;&lt; close</a></p>
 </div>
 {% endblock right_column %}
 

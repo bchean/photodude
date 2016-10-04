@@ -80,11 +80,21 @@ def api_insert_single_label():
     result = label_model.insert_single_label(name)
     return jsonify(result)
 
-@app.route('/api/photolabels/', methods=['POST'])
-def api_insert_single_photolabel():
-    photo_id = request.json['photo_id']
-    label_id = request.json['label_id']
-    result = photolabel_model.insert_single_photolabel(photo_id, label_id)
+@app.route('/api/photolabels/', methods=['GET', 'POST'])
+def api_getpost_single_photolabel():
+    if request.method == 'GET':
+        photo_id = request.args['photo_id']
+        label_id = request.args['label_id']
+        result = photolabel_model.get_single_photolabel(photo_id, label_id)
+    else:
+        photo_id = request.json['photo_id']
+        label_id = request.json['label_id']
+        result = photolabel_model.insert_single_photolabel(photo_id, label_id)
+    return jsonify(result)
+
+@app.route('/api/photolabels/<string:photolabel_id>', methods=['DELETE'])
+def api_delete_single_photolabel(photolabel_id):
+    result = photolabel_model.delete_single_photolabel(photolabel_id)
     return jsonify(result)
 
 ################

@@ -150,15 +150,23 @@ var CurrentPhotoLabelsView = Backbone.View.extend({
   },
 
   render: function() {
-    var labelStr = this.getLabels().join(', ');
-    this.$('#labels').html(labelStr || 'no labels yet');
+    this.$('#labels').html(null);
+    var $labelLinks = this.collection.map(function(labelModel) {
+      var labelLink = new CurrentPhotoLabelLinkView({model: labelModel});
+      return labelLink.render().$el;
+    });
+    if ($labelLinks.length) {
+      this.$('#labels').append($labelLinks);
+    } else {
+      this.$('#labels').html('no labels yet');
+    }
     return this;
   },
 
   getLabels: function() {
     return this.collection.map(function(labelModel) {
       return labelModel.get('name');
-    })
+    });
   },
 
   handleUpdateCurrentPhoto: function(newPhotoModel) {
@@ -172,6 +180,28 @@ var CurrentPhotoLabelsView = Backbone.View.extend({
 
   openAddLabelDialog() {
     currentPhotoAddLabelModalView.show();
+  },
+
+  focus: function() {
+    this.$('#addLabelButton').focus();
+  }
+});
+
+var CurrentPhotoLabelLinkView = Backbone.View.extend({
+  tagName: 'a',
+  className: 'photoLabelLink',
+  events: {
+    'click': 'handleClick'
+  },
+
+  render: function() {
+    this.$el.attr('href', '#');
+    this.$el.html(this.model.get('name'));
+    return this;
+  },
+
+  handleClick: function() {
+    currentPhotoRemoveLabelModalView.show(this.model);
   }
 });
 
@@ -213,6 +243,7 @@ var CurrentPhotoAddLabelModalView = Backbone.View.extend({
 
   hide: function() {
     this.$el.addClass('hidden');
+    currentPhotoLabelsView.focus();
   },
 
   handleSelectLabel: function() {
@@ -231,12 +262,55 @@ var CurrentPhotoAddLabelModalView = Backbone.View.extend({
   }
 });
 
+var CurrentPhotoRemoveLabelModalView = Backbone.View.extend({
+  el: '#removeLabelModal',
+  events: {
+    'click #confirmLabelRemove': 'confirmLabelRemove',
+    'click #closeAddLabelModal': 'hide'
+  },
+
+  initialize: function() {
+    dispatcher.on('update:currentPhoto', function(newPhotoModel) {
+      this.photoModel = newPhotoModel;
+    }, this);
+  },
+
+  show: function(newLabelModel) {
+    this.labelModel = newLabelModel;
+    this.$('#labelToRemove').html(this.labelModel.get('name'));
+    this.$el.removeClass('hidden');
+    this.$('#confirmLabelRemove').focus();
+  },
+
+  hide: function() {
+    this.$el.addClass('hidden');
+    currentPhotoLabelsView.focus();
+  },
+
+  confirmLabelRemove: function() {
+    var photolabelModel = new MC.PhotolabelModel();
+    photolabelModel.fetch({
+      data: {
+        photo_id: this.photoModel.get('id'),
+        label_id: this.labelModel.get('id')
+      },
+      success: function() {
+        photolabelModel.destroy();
+        currentPhotoLabelsView.refresh();
+      }
+    });
+
+    this.hide();
+  }
+});
+
 var photoCollection = new MC.PhotoCollection();
 var labelCollection = new MC.LabelCollection();
 var photoListView = new PhotoListView({collection: photoCollection});
 var currentPhotoView = new CurrentPhotoView({collection: photoCollection});
 var currentPhotoLabelsView = new CurrentPhotoLabelsView({collection: new MC.LabelCollection()});
 var currentPhotoAddLabelModalView = new CurrentPhotoAddLabelModalView();
+var currentPhotoRemoveLabelModalView = new CurrentPhotoRemoveLabelModalView();
 
 dispatcher.listenToOnce(photoCollection, 'sync', function() {
   if (photoCollection.length) {

@@ -16,7 +16,7 @@ var LabelCollection = Backbone.Collection.extend({
 
 var PhotolabelModel = Backbone.Model.extend({
   urlRoot: '/api/photolabels/'
-})
+});
 
 module.exports = {
   PhotoModel: PhotoModel,
