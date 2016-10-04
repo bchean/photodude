@@ -40,10 +40,14 @@ var LabelListView = Backbone.View.extend({
   },
 
   render: function() {
+    this.$el.html(null);
+
     this.collection.each(function(labelModel) {
       var labelListItem = new LabelListItemView({model: labelModel});
       this.$el.append(labelListItem.render().$el);
     }, this);
+
+    this.selectFirstLabel();
     return this;
   },
 
@@ -134,28 +138,71 @@ var CurrentLabelPhotosView = Backbone.View.extend({
   }
 });
 
+var CreateLabelModalView = Backbone.View.extend({
+  el: '#createLabelModal',
+  events: {
+    'keypress #labelInput': 'handleInputKeypress',
+    'click #closeCreateLabelModal': 'hide'
+  },
+
+  show: function() {
+    this.$el.removeClass('hidden');
+    this.$('#labelInput').focus();
+    this.$('#labelInput').val(null);
+  },
+
+  hide: function() {
+    this.$el.addClass('hidden');
+    $('#linkToPhotosPage').focus();
+  },
+
+  isVisible: function() {
+    return !this.$el.hasClass('hidden');
+  },
+
+  handleInputKeypress: function(e) {
+    if (e.keyCode === 13) { // enter
+      var newLabelName = this.$('#labelInput').val().trim();
+      if (newLabelName) {
+        this.createLabel(newLabelName);
+      }
+    }
+  },
+
+  createLabel: function(newLabelName) {
+    labelCollection.create({name: newLabelName});
+    this.hide();
+  }
+});
+
 var labelCollection = new MC.LabelCollection();
 var labelListView = new LabelListView({collection: labelCollection});
 var photoCollection = new MC.PhotoCollection();
 var currentLabelPhotosView = new CurrentLabelPhotosView({collection: photoCollection});
+var createLabelModalView = new CreateLabelModalView();
 
-dispatcher.listenToOnce(labelCollection, 'sync', function() {
-  if (labelCollection.length) {
-    labelListView.selectFirstLabel();
+$('#createLabelButton').on('click', createLabelModalView.show.bind(createLabelModalView));
+
+$(document).keypress(function(e) {
+  if (!createLabelModalView.isVisible()) {
+    if (e.key === 'j') {
+      labelListView.selectNextLabel();
+    } else if (e.key === 'k') {
+      labelListView.selectPreviousLabel();
+    } else if (e.key === 'g') {
+      labelListView.selectFirstLabel();
+    } else if (e.key === 'G') {
+      labelListView.selectLastLabel();
+    }
   }
 });
 
-document.onkeypress = function(e) {
-  if (e.key === 'j') {
-    labelListView.selectNextLabel();
-  } else if (e.key === 'k') {
-    labelListView.selectPreviousLabel();
-  } else if (e.key === 'g') {
-    labelListView.selectFirstLabel();
-  } else if (e.key === 'G') {
-    labelListView.selectLastLabel();
+$(document).keyup(function(e) {
+  // With keypress, the 'l' makes it into the input box.
+  if (e.key === 'l') {
+    createLabelModalView.show();
   }
-};
+});
 
 labelCollection.fetch();
 $('#linkToPhotosPage').focus();

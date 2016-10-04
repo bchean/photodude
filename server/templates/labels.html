@@ -20,8 +20,10 @@
 }
 
 #imagesContainer .image {
-  max-width: 400px;
+  max-width: 33%;
+  max-height: 33vh;
   margin: 1px;
+  vertical-align: top;
 }
 </style>
 {% endblock style %}
@@ -30,7 +32,15 @@
 <h1>{{ self.title() }}</h1>
 <p><a id=linkToPhotosPage href="{{ url_for('view_photos') }}">&lt;&lt; photos</a></p>
 
+<p><button id=createLabelButton>&gt; create</button></p>
+
 <ul class=list></ul>
+
+<div id=createLabelModal class="modal hidden">
+  <p>&gt; create label</p>
+  <p><input id=labelInput type=text/></p>
+  <p><a id=closeCreateLabelModal href=#>&lt;&lt; close</a></p>
+</div>
 {% endblock left_column %}
 
 {% block right_column %}

@@ -11,7 +11,7 @@ var PhotoCollection = Backbone.Collection.extend({
 var LabelModel = Backbone.Model.extend({});
 
 var LabelCollection = Backbone.Collection.extend({
-  url: '/api/labels',
+  url: '/api/labels/',
   model: LabelModel
 });
 
@@ -86,6 +86,7 @@ var PhotoListView = Backbone.View.extend({
       var photoListItem = new PhotoListItemView({model: photoModel});
       this.$el.append(photoListItem.render().$el);
     }, this);
+    this.selectFirstPhoto();
     return this;
   },
 
@@ -342,13 +343,7 @@ var currentPhotoLabelsView = new CurrentPhotoLabelsView({collection: new MC.Labe
 var currentPhotoAddLabelModalView = new CurrentPhotoAddLabelModalView();
 var currentPhotoRemoveLabelModalView = new CurrentPhotoRemoveLabelModalView();
 
-dispatcher.listenToOnce(photoCollection, 'sync', function() {
-  if (photoCollection.length) {
-    photoListView.selectFirstPhoto();
-  }
-});
-
-document.onkeypress = function(e) {
+$(document).keypress(function(e) {
   if (e.key === 'j') {
     photoListView.selectNextPhoto();
   } else if (e.key === 'k') {
@@ -360,7 +355,7 @@ document.onkeypress = function(e) {
   } else if (e.key === 'l') {
     currentPhotoAddLabelModalView.show();
   }
-};
+});
 
 photoCollection.fetch();
 labelCollection.fetch();

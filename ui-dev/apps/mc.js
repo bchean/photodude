@@ -10,7 +10,7 @@ var PhotoCollection = Backbone.Collection.extend({
 var LabelModel = Backbone.Model.extend({});
 
 var LabelCollection = Backbone.Collection.extend({
-  url: '/api/labels',
+  url: '/api/labels/',
   model: LabelModel
 });
 
