@@ -47,10 +47,21 @@ var PhotoListItemView = Backbone.View.extend({
 
   render: function() {
     var modelData = this.model.toJSON();
-    this.$el.html(
+    this.$el.html(null);
+
+    var $thumbnail = $('<img/>');
+    $thumbnail.attr('src', '/photo_files/' + modelData.filename);
+    $thumbnail.addClass('thumbnail');
+
+    var $info = $('<span></span>');
+    $info.html(
         modelData.filename + ' / ' +
         modelData.description + ' / '+
         modelData.date);
+
+    this.$el.append($thumbnail);
+    this.$el.append($info);
+
     return this;
   },
 

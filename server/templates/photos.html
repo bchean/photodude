@@ -16,18 +16,35 @@
   margin-left: -70px;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.95);
-  border: 1px solid black;
+  border: 1px solid lightgrey;
+  border-radius: .25rem;
 }
 
 .hidden {
   display: none;
 }
 
+#photoList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.photoListItem:not(:first-child) {
+  margin-top: .25rem;
+}
+.photoListItem:hover {
+  background: powderblue;
+}
 .photoListItem.selected {
   color: blue;
+  background: lightblue;
 }
 .photoListItem.selected::before {
   content: "> ";
+}
+
+.thumbnail {
+  height: 60px;
 }
 
 #currentPhotoContainer {
