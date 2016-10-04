@@ -11,6 +11,42 @@ body {
   margin: 0 auto;
   width: 80%;
 }
+
+.list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.listItem:not(:first-child) {
+  margin-top: .25rem;
+}
+.listItem:hover {
+  background: powderblue;
+}
+.listItem.selected {
+  color: blue;
+  background: lightblue;
+}
+.listItem.selected::before {
+  content: "> ";
+}
+
+.modal {
+  width: 140px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -60px;
+  margin-left: -70px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, .95);
+  border: 1px solid lightgrey;
+  border-radius: .25rem;
+}
+
+.hidden {
+  display: none;
+}
 </style>
 {% endblock style %}
 

@@ -7,7 +7,7 @@ var dispatcher = _.extend({}, Backbone.Events);
 
 var LabelListItemView = Backbone.View.extend({
   tagName: 'li',
-  className: 'labelListItem',
+  className: 'listItem',
 
   isSelected: false,
 
@@ -29,7 +29,7 @@ var LabelListItemView = Backbone.View.extend({
 });
 
 var LabelListView = Backbone.View.extend({
-  el: '#labelList',
+  el: '.list',
 
   // 1-based. We start at a dummy value for convenience.
   selectedIndex_1: null,
@@ -158,3 +158,4 @@ document.onkeypress = function(e) {
 };
 
 labelCollection.fetch();
+$('#linkToPhotosPage').focus();

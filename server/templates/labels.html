@@ -15,13 +15,6 @@
   width: 80%;
 }
 
-.labelListItem.selected {
-  color: blue;
-}
-.labelListItem.selected::before {
-  content: "> ";
-}
-
 #currentLabelContainer {
   padding: 1rem;
 }
@@ -35,9 +28,9 @@
 
 {% block left_column %}
 <h1>{{ self.title() }}</h1>
-<p><a href="{{ url_for('view_photos') }}">&lt;&lt; photos</a></p>
+<p><a id=linkToPhotosPage href="{{ url_for('view_photos') }}">&lt;&lt; photos</a></p>
 
-<ul id=labelList></ul>
+<ul class=list></ul>
 {% endblock left_column %}
 
 {% block right_column %}
