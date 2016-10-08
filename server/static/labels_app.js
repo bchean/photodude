@@ -28,7 +28,6 @@ var LabelListItemView = Backbone.View.extend({
     var labelData = this.model.toJSON();
     this.$el.html(
         labelData.name + ' / ' +
-        labelData.color + ' / ' +
         numPhotosStr);
     return this;
   },

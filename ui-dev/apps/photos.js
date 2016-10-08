@@ -38,8 +38,6 @@ var PhotoListItemView = Backbone.View.extend({
     var $info = $('<span></span>');
     $info.html(
         modelData.filename + ' / ' +
-        modelData.description + ' / ' +
-        modelData.date + ' / ' +
         labelsStr);
 
     this.$el.append($thumbnail);
@@ -163,7 +161,7 @@ var CurrentPhotoView = Backbone.View.extend({
 });
 
 var CurrentPhotoLabelsView = Backbone.View.extend({
-  el: '#currentPhotoContainer #labelsContainer',
+  el: '#currentPhotoContainer .labelsContainer',
   events: {
     'click #addLabelButton': 'openAddLabelDialog'
   },
