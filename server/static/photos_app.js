@@ -419,8 +419,13 @@ $(document).keypress(function(e) {
 labelCollection.fetch();
 photolabelCollection.fetch({
   success: function() {
-    photoCollection.comparator = function(photoModel) {
-      return photolabelCollection.where({photo_id: photoModel.get('id')}).length;
+    photoCollection.comparator = function(firstPhoto, secondPhoto) {
+      var numLabelsFirst = photolabelCollection.where({photo_id: firstPhoto.get('id')}).length;
+      var numLabelsSecond = photolabelCollection.where({photo_id: secondPhoto.get('id')}).length;
+      if (numLabelsFirst !== numLabelsSecond) {
+        return numLabelsFirst - numLabelsSecond;
+      }
+      return firstPhoto.get('filename').localeCompare(secondPhoto.get('filename'));
     }
     photoCollection.fetch({
       success: function() {

@@ -237,8 +237,13 @@ $(document).keyup(function(e) {
 
 photolabelCollection.fetch({
   success: function() {
-    labelCollection.comparator = function(labelModel) {
-      return photolabelCollection.where({label_id: labelModel.get('id')}).length;
+    labelCollection.comparator = function(firstLabel, secondLabel) {
+      var numPhotosFirst = photolabelCollection.where({label_id: firstLabel.get('id')}).length;
+      var numPhotosSecond = photolabelCollection.where({label_id: secondLabel.get('id')}).length;
+      if (numPhotosFirst !== numPhotosSecond) {
+        return numPhotosFirst - numPhotosSecond;
+      }
+      return firstLabel.get('name').localeCompare(secondLabel.get('name'));
     }
     labelCollection.fetch({
       success: function() {
