@@ -1,7 +1,8 @@
 var Backbone = require('backbone'),
     _ = require('underscore'),
     $ = require('jquery'),
-    MC = require('./mc');
+    MC = require('./mc'),
+    R = require('./route');
 
 var dispatcher = _.extend({}, Backbone.Events);
 
@@ -47,7 +48,6 @@ var LabelListView = Backbone.View.extend({
       this.$el.append(labelListItem.render().$el);
     }, this);
 
-    this.selectFirstLabel();
     return this;
   },
 
@@ -135,6 +135,7 @@ var CurrentLabelPhotosView = Backbone.View.extend({
   handleUpdateCurrentLabel: function(newLabelModel) {
     var newLabelId = newLabelModel.get('id');
     this.collection.fetch({data: {label_id: newLabelId}});
+    labelRouter.navigate(newLabelModel.get('name'));
   }
 });
 
@@ -178,6 +179,11 @@ var CreateLabelModalView = Backbone.View.extend({
 var labelCollection = new MC.LabelCollection({}, {
   comparator: 'name'
 });
+var labelRouter = new R.LabelRouter({
+  dispatcher: dispatcher,
+  labelCollection: labelCollection
+});
+
 var labelListView = new LabelListView({collection: labelCollection});
 var photoCollection = new MC.PhotoCollection();
 var currentLabelPhotosView = new CurrentLabelPhotosView({collection: photoCollection});
@@ -208,5 +214,9 @@ $(document).keyup(function(e) {
   }
 });
 
-labelCollection.fetch();
+labelCollection.fetch({
+  success: function() {
+    Backbone.history.start();
+  }
+});
 $('#linkToPhotosPage').focus();
