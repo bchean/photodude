@@ -109,7 +109,7 @@ var LabelListView = Backbone.View.extend({
   }
 });
 
-var CurrentLabelPhotosView = Backbone.View.extend({
+var CurrentLabelPhotoCollageView = Backbone.View.extend({
   el: '#currentLabelContainer #imagesContainer',
 
   initialize: function() {
@@ -123,10 +123,8 @@ var CurrentLabelPhotosView = Backbone.View.extend({
     } else {
       this.$el.html(null);
       this.collection.each(function(photoModel) {
-        var $photoImageEl = $('<img/>');
-        $photoImageEl.addClass('image');
-        $photoImageEl.attr('src', '/photo_files/' + photoModel.get('filename'));
-        this.$el.append($photoImageEl);
+        var collageItem = new CurrentLabelPhotoCollageItemView({model: photoModel});
+        this.$el.append(collageItem.render().$el);
       }, this);
     }
     return this;
@@ -138,6 +136,21 @@ var CurrentLabelPhotosView = Backbone.View.extend({
     labelRouter.navigate(newLabelModel.get('name'));
   }
 });
+
+var CurrentLabelPhotoCollageItemView = Backbone.View.extend({
+  tagName: 'a',
+
+  render: function() {
+    this.$el.attr('href', '/photos/#' + this.model.get('filename'));
+
+    var $photoImageEl = $('<img/>');
+    $photoImageEl.addClass('image');
+    $photoImageEl.attr('src', '/photo_files/' + this.model.get('filename'));
+    this.$el.append($photoImageEl);
+
+    return this;
+  }
+})
 
 var CreateLabelModalView = Backbone.View.extend({
   el: '#createLabelModal',
@@ -186,7 +199,7 @@ var labelRouter = new R.LabelRouter({
 
 var labelListView = new LabelListView({collection: labelCollection});
 var photoCollection = new MC.PhotoCollection();
-var currentLabelPhotosView = new CurrentLabelPhotosView({collection: photoCollection});
+var currentLabelPhotosView = new CurrentLabelPhotoCollageView({collection: photoCollection});
 var createLabelModalView = new CreateLabelModalView();
 
 $('#createLabelButton').on('click', createLabelModalView.show.bind(createLabelModalView));
