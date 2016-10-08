@@ -17,10 +17,18 @@ var LabelListItemView = Backbone.View.extend({
   },
 
   render: function() {
+    this.$el.html('');
+
+    var numPhotos = photolabelCollection.where({label_id: this.model.get('id')}).length;
+    var numPhotosStr = numPhotos
+        ? numPhotos + ' photos'
+        : 'no photos yet';
+
     var labelData = this.model.toJSON();
     this.$el.html(
         labelData.name + ' / ' +
-        labelData.color);
+        labelData.color + ' / ' +
+        numPhotosStr);
     return this;
   },
 
@@ -189,9 +197,8 @@ var CreateLabelModalView = Backbone.View.extend({
   }
 });
 
-var labelCollection = new MC.LabelCollection({}, {
-  comparator: 'name'
-});
+var labelCollection = new MC.LabelCollection();
+var photolabelCollection = new MC.PhotolabelCollection();
 var labelRouter = new R.LabelRouter({
   dispatcher: dispatcher,
   labelCollection: labelCollection
@@ -227,9 +234,17 @@ $(document).keyup(function(e) {
   }
 });
 
-labelCollection.fetch({
+photolabelCollection.fetch({
   success: function() {
-    Backbone.history.start();
+    labelCollection.comparator = function(labelModel) {
+      return photolabelCollection.where({label_id: labelModel.get('id')}).length;
+    }
+    labelCollection.fetch({
+      success: function() {
+        labelCollection.sort();
+        Backbone.history.start();
+      }
+    });
   }
-});
+})
 $('#linkToPhotosPage').focus();

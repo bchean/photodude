@@ -81,11 +81,14 @@ def api_insert_single_label():
     return jsonify(result)
 
 @app.route('/api/photolabels/', methods=['GET', 'POST'])
-def api_getpost_single_photolabel():
+def api_getinsert_photolabels():
     if request.method == 'GET':
-        photo_id = request.args['photo_id']
-        label_id = request.args['label_id']
-        result = photolabel_model.get_single_photolabel(photo_id, label_id)
+        if len(request.args):
+            photo_id = request.args['photo_id']
+            label_id = request.args['label_id']
+            result = photolabel_model.get_single_photolabel(photo_id, label_id)
+        else:
+            result = photolabel_model.get_all_photolabels()
     else:
         photo_id = request.json['photo_id']
         label_id = request.json['label_id']

@@ -19,12 +19,18 @@ var PhotolabelModel = Backbone.Model.extend({
   urlRoot: '/api/photolabels/'
 });
 
+var PhotolabelCollection = Backbone.Collection.extend({
+  model: PhotolabelModel,
+  url: '/api/photolabels/'
+})
+
 module.exports = {
   PhotoModel: PhotoModel,
   PhotoCollection: PhotoCollection,
   LabelModel: LabelModel,
   LabelCollection: LabelCollection,
-  PhotolabelModel: PhotolabelModel
+  PhotolabelModel: PhotolabelModel,
+  PhotolabelCollection: PhotolabelCollection
 };
 
 },{"backbone":4}],2:[function(require,module,exports){
@@ -50,6 +56,17 @@ var PhotoListItemView = Backbone.View.extend({
     var modelData = this.model.toJSON();
     this.$el.html(null);
 
+    var photolabelModels = photolabelCollection.where({photo_id: this.model.get('id')});
+    var labelModels = photolabelModels.map(plm => labelCollection.get(plm.get('label_id')));
+    var labelsStr;
+    if (labelModels.length) {
+      labelsStr = '['
+          + labelModels.map(lm => lm.get('name')).sort().join(', ')
+          + ']';
+    } else {
+      labelsStr = 'no labels yet';
+    }
+
     var $thumbnail = $('<img/>');
     $thumbnail.attr('src', '/photo_files/' + modelData.filename);
     $thumbnail.addClass('thumbnail');
@@ -57,8 +74,9 @@ var PhotoListItemView = Backbone.View.extend({
     var $info = $('<span></span>');
     $info.html(
         modelData.filename + ' / ' +
-        modelData.description + ' / '+
-        modelData.date);
+        modelData.description + ' / ' +
+        modelData.date + ' / ' +
+        labelsStr);
 
     this.$el.append($thumbnail);
     this.$el.append($info);
@@ -84,6 +102,7 @@ var PhotoListView = Backbone.View.extend({
   },
 
   render: function() {
+    this.$el.html('');
     this.collection.each(function(photoModel) {
       var photoListItem = new PhotoListItemView({model: photoModel});
       this.$el.append(photoListItem.render().$el);
@@ -196,6 +215,7 @@ var CurrentPhotoLabelsView = Backbone.View.extend({
       var labelLink = new CurrentPhotoLabelLinkView({model: labelModel});
       return labelLink.render().$el;
     });
+    $labelLinks.sort(($first, $second) => $first.html().localeCompare($second.html()));
     if ($labelLinks.length) {
       this.$('#labels').append($labelLinks);
     } else {
@@ -266,6 +286,9 @@ var CurrentPhotoAddLabelModalView = Backbone.View.extend({
       $labelEl.attr('value', labelModel.get('id'));
       $labelEl.html(labelModel.get('name'));
       return $labelEl;
+    });
+    $labelEls.sort(($first, $second) => {
+      return $first.html().localeCompare($second.html());
     });
 
     var $labelPicker = this.$('#labelPicker');
@@ -361,6 +384,7 @@ var CurrentPhotoRemoveLabelModalView = Backbone.View.extend({
 
 var photoCollection = new MC.PhotoCollection();
 var labelCollection = new MC.LabelCollection();
+var photolabelCollection = new MC.PhotolabelCollection();
 var photoRouter = new R.PhotoRouter({
   dispatcher: dispatcher,
   photoCollection: photoCollection
@@ -392,12 +416,20 @@ $(document).keypress(function(e) {
   }
 });
 
-photoCollection.fetch({
+labelCollection.fetch();
+photolabelCollection.fetch({
   success: function() {
-    Backbone.history.start();
+    photoCollection.comparator = function(photoModel) {
+      return photolabelCollection.where({photo_id: photoModel.get('id')}).length;
+    }
+    photoCollection.fetch({
+      success: function() {
+        photoCollection.sort();
+        Backbone.history.start();
+      }
+    });
   }
 });
-labelCollection.fetch();
 $('#linkToLabelsPage').focus();
 
 },{"./mc":1,"./route":3,"backbone":4,"jquery":5,"underscore":6}],3:[function(require,module,exports){

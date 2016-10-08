@@ -18,10 +18,16 @@ var PhotolabelModel = Backbone.Model.extend({
   urlRoot: '/api/photolabels/'
 });
 
+var PhotolabelCollection = Backbone.Collection.extend({
+  model: PhotolabelModel,
+  url: '/api/photolabels/'
+})
+
 module.exports = {
   PhotoModel: PhotoModel,
   PhotoCollection: PhotoCollection,
   LabelModel: LabelModel,
   LabelCollection: LabelCollection,
-  PhotolabelModel: PhotolabelModel
+  PhotolabelModel: PhotolabelModel,
+  PhotolabelCollection: PhotolabelCollection
 };

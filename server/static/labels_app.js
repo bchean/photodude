@@ -18,10 +18,18 @@ var LabelListItemView = Backbone.View.extend({
   },
 
   render: function() {
+    this.$el.html('');
+
+    var numPhotos = photolabelCollection.where({label_id: this.model.get('id')}).length;
+    var numPhotosStr = numPhotos
+        ? numPhotos + ' photos'
+        : 'no photos yet';
+
     var labelData = this.model.toJSON();
     this.$el.html(
         labelData.name + ' / ' +
-        labelData.color);
+        labelData.color + ' / ' +
+        numPhotosStr);
     return this;
   },
 
@@ -190,9 +198,8 @@ var CreateLabelModalView = Backbone.View.extend({
   }
 });
 
-var labelCollection = new MC.LabelCollection({}, {
-  comparator: 'name'
-});
+var labelCollection = new MC.LabelCollection();
+var photolabelCollection = new MC.PhotolabelCollection();
 var labelRouter = new R.LabelRouter({
   dispatcher: dispatcher,
   labelCollection: labelCollection
@@ -228,11 +235,19 @@ $(document).keyup(function(e) {
   }
 });
 
-labelCollection.fetch({
+photolabelCollection.fetch({
   success: function() {
-    Backbone.history.start();
+    labelCollection.comparator = function(labelModel) {
+      return photolabelCollection.where({label_id: labelModel.get('id')}).length;
+    }
+    labelCollection.fetch({
+      success: function() {
+        labelCollection.sort();
+        Backbone.history.start();
+      }
+    });
   }
-});
+})
 $('#linkToPhotosPage').focus();
 
 },{"./mc":2,"./route":3,"backbone":4,"jquery":5,"underscore":6}],2:[function(require,module,exports){
@@ -256,12 +271,18 @@ var PhotolabelModel = Backbone.Model.extend({
   urlRoot: '/api/photolabels/'
 });
 
+var PhotolabelCollection = Backbone.Collection.extend({
+  model: PhotolabelModel,
+  url: '/api/photolabels/'
+})
+
 module.exports = {
   PhotoModel: PhotoModel,
   PhotoCollection: PhotoCollection,
   LabelModel: LabelModel,
   LabelCollection: LabelCollection,
-  PhotolabelModel: PhotolabelModel
+  PhotolabelModel: PhotolabelModel,
+  PhotolabelCollection: PhotolabelCollection
 };
 
 },{"backbone":4}],3:[function(require,module,exports){
