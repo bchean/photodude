@@ -256,7 +256,7 @@ var CurrentPhotoLabelLinkView = Backbone.View.extend({
   },
 
   render: function() {
-    this.$el.attr('href', '#');
+    this.$el.attr('href', 'javascript:void(0)');
     this.$el.html(this.model.get('name'));
     return this;
   },
