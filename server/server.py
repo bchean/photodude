@@ -136,7 +136,7 @@ def cmd_refreshphotos():
 def is_photo_file(path):
     photo_dir = app.config['PHOTO_DIR']
     photo_file_extensions = ['jpg', 'jpeg', 'gif', 'png']
-    extension = path[path.find('.')+1:].lower()
+    extension = path[path.rfind('.')+1:].lower()
     return os.path.isfile(os.path.join(photo_dir, path)) and extension in photo_file_extensions
 
 if __name__ == '__main__':
